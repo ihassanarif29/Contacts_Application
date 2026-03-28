@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
+    alias(libs.plugins.devtools.ksp)
 }
 
 android {
@@ -56,13 +56,11 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("io.coil-kt:coil-compose:2.1.0")
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.1")
 
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
-
+    ksp(libs.androidx.room.compiler)
 }
