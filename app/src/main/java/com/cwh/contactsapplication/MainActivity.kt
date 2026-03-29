@@ -14,12 +14,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.cwh.contactsapplication.model.ContactDatabase
 import com.cwh.contactsapplication.repository.ContactRepository
 import com.cwh.contactsapplication.ui.theme.ContactsApplicationTheme
 import com.cwh.contactsapplication.view.AddContactScreen
+import com.cwh.contactsapplication.view.ContactListScreen
 import com.cwh.contactsapplication.viewmodel.ContactViewModel
 import com.cwh.contactsapplication.viewmodel.ContactViewModelFactory
 import java.io.File
@@ -33,11 +36,19 @@ class MainActivity : ComponentActivity() {
         val viewModel:  ContactViewModel by viewModels { ContactViewModelFactory(repository) }
 
 
-        enableEdgeToEdge()
+        //enableEdgeToEdge()
         setContent {
             ContactsApplicationTheme {
-                //val navController = rememberNavController()
+                val navController = rememberNavController()
                 //AddContactScreen(viewModel, navController = navController)
+                NavHost(navController = navController, startDestination = "contactList"){
+                    composable("contactList"){
+                        ContactListScreen(viewModel, navController)
+                    }
+                    composable("addContact"){
+                        AddContactScreen(viewModel, navController)
+                    }
+                }
             }
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
@@ -76,13 +77,15 @@ fun AddContactScreen(viewModel: ContactViewModel, navController: NavController){
                             .fillMaxHeight()
                             .wrapContentHeight(Alignment.CenterVertically)
                     ) {
-                        Text(text = "Add Contact", fontSize = 20.sp)
+                        Text(text = "Add Contact", fontSize = 18.sp)
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
+                    IconButton(
+                        onClick = {
                         Toast.makeText(context,"Add Contact", Toast.LENGTH_SHORT).show()
-                    }) {
+                        }
+                    ) {
                         Icon(painter = painterResource(R.drawable.add_contact),contentDescription = null)
                     }
                 },
@@ -106,7 +109,9 @@ fun AddContactScreen(viewModel: ContactViewModel, navController: NavController){
                 Image(
                     painter = rememberAsyncImagePainter(uri),
                     contentDescription = null,
-                    modifier = Modifier.size(128.dp),
+                    modifier = Modifier
+                        .size(128.dp)
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
             }
