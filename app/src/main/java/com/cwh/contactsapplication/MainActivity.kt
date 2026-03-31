@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
@@ -22,7 +23,9 @@ import com.cwh.contactsapplication.model.ContactDatabase
 import com.cwh.contactsapplication.repository.ContactRepository
 import com.cwh.contactsapplication.ui.theme.ContactsApplicationTheme
 import com.cwh.contactsapplication.view.AddContactScreen
+import com.cwh.contactsapplication.view.ContactDetailScreen
 import com.cwh.contactsapplication.view.ContactListScreen
+import com.cwh.contactsapplication.view.EditContactDetailScreen
 import com.cwh.contactsapplication.viewmodel.ContactViewModel
 import com.cwh.contactsapplication.viewmodel.ContactViewModelFactory
 import java.io.File
@@ -47,6 +50,20 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("addContact"){
                         AddContactScreen(viewModel, navController)
+                    }
+                    composable("contactDetail/{contactId}"){backStackEntry ->
+                        val contactId = backStackEntry.arguments?.getString("contactId")?.toInt()
+                        val contact = viewModel.allContacts.observeAsState(initial = emptyList()).value.find {
+                            it.id == contactId
+                        }
+                        contact?.let { ContactDetailScreen(it, viewModel, navController) }
+                    }
+                    composable("editContact/{contactId}"){backStackEntry ->
+                        val contactId = backStackEntry.arguments?.getString("contactId")?.toInt()
+                        val contact = viewModel.allContacts.observeAsState(initial = emptyList()).value.find {
+                            it.id == contactId
+                        }
+                        contact?.let { EditContactDetailScreen(it, viewModel, navController) }
                     }
                 }
             }
