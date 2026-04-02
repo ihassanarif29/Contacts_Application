@@ -52,6 +52,20 @@ import com.cwh.contactsapplication.copyUriToInternalStorage
 import com.cwh.contactsapplication.ui.theme.MyCustomColor
 import com.cwh.contactsapplication.viewmodel.ContactViewModel
 
+
+
+fun isValidName(name: String): Boolean {
+    return name.trim().matches(Regex("^[a-zA-Z ]{2,50}$"))
+}
+
+fun isValidPhone(phone: String): Boolean {
+    return phone.matches(Regex("^\\+?[0-9]{10,15}$"))
+}
+
+fun isValidEmail(email: String): Boolean {
+    return email.isEmpty() || android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+}
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +75,11 @@ fun AddContactScreen(viewModel: ContactViewModel, navController: NavController){
     var name by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+
+
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var phoneError by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
 
     //Content picker in Jetpack Compose
     val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()){uri: Uri? ->
@@ -130,8 +149,14 @@ fun AddContactScreen(viewModel: ContactViewModel, navController: NavController){
 
             TextField(
                 value = name,
-                onValueChange = { name = it },
+                onValueChange = {
+                    name = it
+                    nameError = null},
                 label = { Text( text = "Name") },
+                isError = nameError != null,
+                supportingText = {
+                    nameError?.let { Text(it, color = Color.Red) }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp)),
@@ -146,8 +171,14 @@ fun AddContactScreen(viewModel: ContactViewModel, navController: NavController){
 
             TextField(
                 value = phoneNumber,
-                onValueChange = { phoneNumber = it },
+                onValueChange = {
+                    phoneNumber = it
+                    phoneError = null },
                 label = { Text( text = "Phone Number") },
+                isError = phoneError != null,
+                supportingText = {
+                    phoneError?.let { Text(it, color = Color.Red) }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp)),
@@ -162,8 +193,14 @@ fun AddContactScreen(viewModel: ContactViewModel, navController: NavController){
 
             TextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    emailError = null},
                 label = { Text( text = "Email") },
+                isError = emailError != null,
+                supportingText = {
+                    emailError?.let { Text(it, color = Color.Red) }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp)),
@@ -178,11 +215,37 @@ fun AddContactScreen(viewModel: ContactViewModel, navController: NavController){
 
             Button(
                 onClick = {
+
+                    var isValid = true
+
+                    if (!isValidName(name)) {
+                        nameError = "Enter valid name (only letters)"
+                        isValid = false
+                    }
+
+                    if (!isValidPhone(phoneNumber)) {
+                        phoneError = "Enter valid phone (10–15 digits)"
+                        isValid = false
+                    }
+
+                    if (!isValidEmail(email)) {
+                        emailError = "Enter valid email"
+                        isValid = false
+                    }
+
+                    if (imageUri == null) {
+                        Toast.makeText(context, "Please select image", Toast.LENGTH_SHORT).show()
+                        isValid = false
+                    }
+
+                    if (!isValid) return@Button
+
+                    // ✅ Save if valid
                     imageUri?.let {
                         val internalPath = copyUriToInternalStorage(context, it, "$name.jpg")
                         internalPath?.let { path ->
-                            viewModel.addContact(path, name, phoneNumber, email)
-                            navController.navigate("contactList"){
+                            viewModel.addContact(path, name.trim(), phoneNumber.trim(), email.trim())
+                            navController.navigate("contactList") {
                                 popUpTo(0)
                             }
                         }
